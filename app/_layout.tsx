@@ -1,18 +1,17 @@
-import { Slot, SplashScreen, Stack, Tabs } from "expo-router";
-import { Text, View, ActivityIndicator } from "react-native";
+import { SplashScreen, Stack } from "expo-router";
+import { View } from "react-native";
 import { COLORS } from "../shared/consts/styles";
 import { StatusBar } from "expo-status-bar";
-import { isLoaded, useFonts } from "expo-font";
-import {
-	SafeAreaProvider,
-	useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useFonts } from "expo-font";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useEffect } from "react";
+import { useSafeUserStore } from "../entities/user/hooks/useSafeUserStore";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-	const insets = useSafeAreaInsets();
+	const initialize = useSafeUserStore((state) => state.initialize);
+	const isInitialized = useSafeUserStore((state) => state.isInitialized);
 	const [fontsLoaded, fontError] = useFonts({
 		Montserrat: require("../assets/fonts/Montserrat-Regular.ttf"),
 		"Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
@@ -24,10 +23,14 @@ export default function RootLayout() {
 	});
 
 	useEffect(() => {
-		if (fontsLoaded) {
+		initialize();
+	}, []);
+
+	useEffect(() => {
+		if (fontsLoaded && isInitialized) {
 			SplashScreen.hideAsync();
 		}
-	}, [fontsLoaded]);
+	}, [fontsLoaded, isInitialized]);
 
 	useEffect(() => {
 		if (fontError) {
@@ -35,19 +38,8 @@ export default function RootLayout() {
 		}
 	}, [fontError]);
 
-	if (!fontsLoaded && !fontError) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					justifyContent: "center",
-					alignItems: "center",
-					backgroundColor: COLORS.colorBg,
-				}}
-			>
-				<ActivityIndicator size="large" color={COLORS.colorFg} />
-			</View>
-		);
+	if (!fontsLoaded) {
+		return null;
 	}
 
 	return (
@@ -59,7 +51,7 @@ export default function RootLayout() {
 						headerShown: false,
 						contentStyle: {
 							backgroundColor: COLORS.colorBg,
-							paddingTop: insets.top,
+							paddingTop: 50,
 						},
 						animation: "none",
 					}}

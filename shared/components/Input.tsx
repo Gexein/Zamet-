@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { COLORS, FONTSIZE, FONTWEIGHT } from "../consts/styles";
 import { forwardRef, useImperativeHandle, useRef } from "react";
-import { InputRef } from "./RegForm";
+import { InputRef } from "../../features/reg-form/reg-form";
 
 export const Input = forwardRef<
 	InputRef,

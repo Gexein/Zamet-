@@ -1,24 +1,34 @@
 import { StyleSheet, Text, View, Animated } from "react-native";
-import { RegForm } from "../shared/components/RegForm";
+import { RegForm } from "../features/reg-form/reg-form";
 import { COLORS, FONTSIZE, FONTWEIGHT } from "../shared/consts/styles";
+import { Redirect } from "expo-router";
+import { useEffect } from "react";
+import { useSafeUserStore } from "../entities/user/hooks/useSafeUserStore";
 
 export default function Login() {
 	const textOpacity = new Animated.Value(0);
 	const logoY = new Animated.Value(-1000);
-	Animated.parallel([
-		Animated.timing(textOpacity, {
-			toValue: 1,
-			duration: 1000,
-			useNativeDriver: true,
-			delay: 1000,
-		}),
-		Animated.timing(logoY, {
-			toValue: 0,
-			duration: 500,
-			useNativeDriver: true,
-			delay: 0,
-		}),
-	]).start();
+	const user = useSafeUserStore((state) => state.user);
+	useEffect(() => {
+		Animated.parallel([
+			Animated.timing(textOpacity, {
+				toValue: 1,
+				duration: 1000,
+				useNativeDriver: true,
+				delay: 1000,
+			}),
+			Animated.timing(logoY, {
+				toValue: 0,
+				duration: 500,
+				useNativeDriver: true,
+				delay: 0,
+			}),
+		]).start();
+	}, []);
+
+	if (user) {
+		return <Redirect href={"/"} />;
+	}
 	return (
 		<View style={styles.container}>
 			<Animated.Image
