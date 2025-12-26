@@ -8,7 +8,7 @@ import {
 	View,
 	GestureResponderEvent,
 } from "react-native";
-import { COLORS } from "../consts/styles";
+import { COLORS } from '../../../consts/styles';
 import { useEffect, useRef } from "react";
 
 export function Button({

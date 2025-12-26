@@ -47,6 +47,7 @@ export const useUserStore = create<IUserState>((set, get) => ({
 	) => {
 		set({ isLoading: true });
 		try {
+			
 			const user = await get().storage.createUserData(
 				name,
 				password,
@@ -114,6 +115,17 @@ export const useUserStore = create<IUserState>((set, get) => ({
 			console.error("Ошибка обновления темы пользователя:", error);
 			set({ isLoading: false });
 			throw error;
+		}
+	},
+	clearAllData: async () => {
+		set({ isLoading: true });
+		try {
+			await get().storage.clearAllData();
+		} catch (error) {
+			console.error("Ошибка при удалении данных", error);
+			throw error;
+		} finally {
+			set({ isLoading: false });
 		}
 	},
 }));

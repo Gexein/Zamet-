@@ -105,3 +105,4 @@ export class EntryStorage {
 		if (rowsAffected === 0) throw new Error("Не удалось удалить запись");
 	}
 }
+

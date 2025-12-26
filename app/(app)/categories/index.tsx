@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import { COLORS } from "../../shared/consts/styles";
+import { COLORS } from "../../../shared/consts/styles";
 
 export default function CategoriesPage() {
 	return (

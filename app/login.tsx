@@ -1,14 +1,16 @@
 import { StyleSheet, Text, View, Animated } from "react-native";
-import { RegForm } from "../features/reg-form/reg-form";
+import { RegForm } from "../features/reg-form/ui/reg-form";
 import { COLORS, FONTSIZE, FONTWEIGHT } from "../shared/consts/styles";
 import { Redirect } from "expo-router";
 import { useEffect } from "react";
 import { useSafeUserStore } from "../entities/user/hooks/useSafeUserStore";
+import { useUserStore } from "../entities/user/store";
 
 export default function Login() {
 	const textOpacity = new Animated.Value(0);
 	const logoY = new Animated.Value(-1000);
 	const user = useSafeUserStore((state) => state.user);
+	const clearAll = useUserStore((state) => state.clearAllData);
 	useEffect(() => {
 		Animated.parallel([
 			Animated.timing(textOpacity, {
@@ -27,7 +29,9 @@ export default function Login() {
 	}, []);
 
 	if (user) {
-		return <Redirect href={"/"} />;
+		// clearAll();
+
+		return <Redirect href="/" />;
 	}
 	return (
 		<View style={styles.container}>

@@ -1,5 +1,5 @@
-import { SqlActions } from "../../../shared/consts/db";
 import { DataBaseService } from "../../../shared/database";
+import { SqlActions } from "../../../shared/consts/db";
 import { ICategorySub } from "../types";
 
 export class CategorySubStorage {
@@ -7,7 +7,7 @@ export class CategorySubStorage {
 	constructor() {
 		this.db = new DataBaseService();
 	}
-	
+
 	async initializeCategorySubDb(): Promise<void> {
 		await this.db.executeSql(`
 			${SqlActions.CREATE} TABLE IF NOT EXISTS category_subcategories (
@@ -21,7 +21,7 @@ export class CategorySubStorage {
 			)
 		`);
 	}
-	
+
 	async getAllSubcategories(categoryId: number): Promise<ICategorySub[]> {
 		const { rows } = await this.db.executeSql<ICategorySub>(
 			`${SqlActions.SELECT} * FROM category_subcategories WHERE category_id = ? ORDER BY created_at DESC`,
@@ -29,15 +29,18 @@ export class CategorySubStorage {
 		);
 		return rows;
 	}
-	
-	async getSubcategoryById(id: number, categoryId: number): Promise<ICategorySub | null> {
+
+	async getSubcategoryById(
+		id: number,
+		categoryId: number
+	): Promise<ICategorySub | null> {
 		const { rows } = await this.db.executeSql<ICategorySub>(
 			`${SqlActions.SELECT} * FROM category_subcategories WHERE id = ? AND category_id = ?`,
 			[id, categoryId]
 		);
 		return rows[0] || null;
 	}
-	
+
 	async createSubcategory(
 		categoryId: number,
 		name: ICategorySub["name"],
@@ -45,16 +48,17 @@ export class CategorySubStorage {
 	): Promise<ICategorySub> {
 		const { insertId } = await this.db.executeSql(
 			`${SqlActions.INSERT} INTO category_subcategories (category_id, name, description) VALUES (?, ?, ?)`,
-			[categoryId, name, description || '']
+			[categoryId, name, description || ""]
 		);
 		if (!insertId) throw new Error("Не удалось создать подкатегорию");
-		
+
 		const subcategory = await this.getSubcategoryById(insertId, categoryId);
-		if (!subcategory) throw new Error("Не удалось получить созданную подкатегорию");
-		
+		if (!subcategory)
+			throw new Error("Не удалось получить созданную подкатегорию");
+
 		return subcategory;
 	}
-	
+
 	async updateSubcategoryName(
 		id: number,
 		categoryId: number,
@@ -64,9 +68,10 @@ export class CategorySubStorage {
 			`${SqlActions.UPDATE} category_subcategories SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_id = ?`,
 			[name, id, categoryId]
 		);
-		if (rowsAffected === 0) throw new Error("Не удалось обновить имя подкатегории");
+		if (rowsAffected === 0)
+			throw new Error("Не удалось обновить имя подкатегории");
 	}
-	
+
 	async updateSubcategoryDescription(
 		id: number,
 		categoryId: number,
@@ -74,11 +79,12 @@ export class CategorySubStorage {
 	): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
 			`${SqlActions.UPDATE} category_subcategories SET description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_id = ?`,
-			[description || '', id, categoryId]
+			[description || "", id, categoryId]
 		);
-		if (rowsAffected === 0) throw new Error("Не удалось обновить описание подкатегории");
+		if (rowsAffected === 0)
+			throw new Error("Не удалось обновить описание подкатегории");
 	}
-	
+
 	async deleteSubcategory(id: number, categoryId: number): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
 			`${SqlActions.DELETE} FROM category_subcategories WHERE id = ? AND category_id = ?`,

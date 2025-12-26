@@ -1,27 +1,15 @@
-import {
-	View,
-	StyleSheet,
-	Alert,
-	TextInputChangeEvent,
-	Animated,
-	Platform,
-	ToastAndroid,
-	Text,
-} from "react-native";
-import { COLORS, FONTSIZE } from "../../shared/consts/styles";
-import { Input } from "../../shared/components/Input";
-import { Button } from "../../shared/components/Button";
-import { useEffect, useRef, useState } from "react";
-import { useUserStore } from "../../entities/user/store";
+import { View, StyleSheet, TextInputChangeEvent, Animated } from "react-native";
+import type { InputRef } from "../../../shared/components/Input/types";
+import { Input } from "../../../shared/components/Input/ui/Input";
+import { Button } from "../../../shared/components/Button/ui/Button";
+import { COLORS, FONTSIZE } from "../../../shared/consts/styles";
 import {
 	isNameValid,
 	isPasswordValid,
-} from "../../shared/utils/inputValidators";
-
-export type InputRef = {
-	focus: () => void;
-	blur: () => void;
-};
+} from "../../../shared/utils/inputValidators";
+import { useEffect, useRef, useState } from "react";
+import { useUserStore } from "../../../entities/user/store";
+import { useAppInfoStore } from "../../app-info/store";
 
 export function RegForm() {
 	const [inputValue, setInputValue] = useState<string>("");
@@ -47,41 +35,28 @@ export function RegForm() {
 		})
 	).current;
 
-	const showAlert = (message: string) => {
-		if (Platform.OS === "android") {
-			ToastAndroid.showWithGravity(
-				`${message} 😊`,
-				ToastAndroid.SHORT,
-				ToastAndroid.BOTTOM
-			);
-		} else {
-			Alert.alert("Упс 😊", `${message}`, [
-				{
-					text: "Окслейд",
-					onPress: () => {
-						inputRef.current && inputRef.current.focus();
-					},
-					style: "cancel",
-				},
-			]);
-		}
-	};
-
-	const onSubmitClick = () => {
+	const onSubmitClick = async () => {
 		const nameCheck = isNameValid(inputValue);
 		const passwordCheck = isPasswordValid(passwordValue);
+		useAppInfoStore.getState().clearMessage();
+
 		if (!nameCheck.isValid) {
-			// inputRef.current && inputRef.current.blur();
-			showAlert(nameCheck.errorContent);
+			useAppInfoStore.getState().setMessage(nameCheck.errorContent);
 		}
 		if (!passwordCheck.isValid) {
-			// inputRef.current && inputRef.current.blur();
-			showAlert(passwordCheck.errorContent);
+			useAppInfoStore.getState().setMessage(passwordCheck.errorContent);
 		}
 		if (nameCheck.isValid && passwordCheck.isValid) {
-			register(inputValue, passwordValue);
+			try {
+				await register(inputValue, passwordValue);
+			} catch (error) {
+				const errorMessage =
+					error instanceof Error
+						? error.message
+						: "Не удалось создать пользователя";
+				useAppInfoStore.getState().setMessage(errorMessage);
+			}
 		}
-		return;
 	};
 
 	useEffect(() => {
@@ -133,7 +108,7 @@ export function RegForm() {
 					label="Введите пароль"
 					placeholder="Пароль"
 					placeholderTextColor={COLORS.colorBg}
-					value={inputValue}
+					value={passwordValue}
 					onChange={(event: TextInputChangeEvent) =>
 						setPasswordValue(event.nativeEvent.text)
 					}
@@ -142,23 +117,23 @@ export function RegForm() {
 			</Animated.View>
 			<Animated.View
 				style={{
-					transform: [
-						{ translateX: animatedValue.x },
-						{ translateY: animatedValue.y },
-					],
+					transform: [{ translateX: animatedValue2 }],
 				}}
 			>
-				<Button disabled={inputValue.length < 1} onPress={onSubmitClick}>
+				<Button
+					disabled={inputValue.length < 1 || passwordValue.length < 1}
+					onPress={onSubmitClick}
+				>
 					<Animated.Text style={[styles.buttonText, { color: color }]}>
 						Начать
 					</Animated.Text>
 				</Button>
-				<Text>
+				{/* <Text>
 					И тут нужно будет выбрать тему, светлая или темная. Будет радио
 					"Оставить темную тему" / "Переключиться на светлую тему" .Здесь будет
 					радио с 2 вариантами . "Использовать пароль для входа в приложение" /
 					"Использовать пароль только для сброса / изменения личных данных"
-				</Text>
+				</Text> */}
 			</Animated.View>
 		</View>
 	);

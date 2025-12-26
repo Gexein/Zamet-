@@ -54,7 +54,7 @@ export class DataBaseService {
 				"error: ",
 				error
 			);
-			return { rows: [], rowsAffected: 0 };
+			throw error;
 		}
 	}
 	async clearTable(tableName: string): Promise<void> {

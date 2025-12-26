@@ -26,5 +26,5 @@ export interface IUserState {
 	updateUserName: (name: IUser["name"]) => Promise<void>;
 	updateUserPassword: (password: IUser["password"]) => Promise<void>;
 	updateUserTheme: (theme: IUser["theme"]) => Promise<void>;
-	
+	clearAllData: () => Promise<void>;
 }

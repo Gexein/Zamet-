@@ -6,9 +6,9 @@ import {
 	Animated,
 	Text,
 } from "react-native";
-import { COLORS, FONTSIZE, FONTWEIGHT } from "../consts/styles";
+import { COLORS, FONTSIZE } from "../../../consts/styles";
 import { forwardRef, useImperativeHandle, useRef } from "react";
-import { InputRef } from "../../features/reg-form/reg-form";
+import { InputRef } from "../types";
 
 export const Input = forwardRef<
 	InputRef,
@@ -21,7 +21,7 @@ export const Input = forwardRef<
 	const scaleValue = useRef(new Animated.Value(1)).current;
 	const scaleIn = () => {
 		Animated.timing(scaleValue, {
-			toValue: 1.1,
+			toValue: 1.07,
 			duration: 100,
 			useNativeDriver: true,
 		}).start();

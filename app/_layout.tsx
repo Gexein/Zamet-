@@ -6,6 +6,7 @@ import { useFonts } from "expo-font";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useEffect } from "react";
 import { useSafeUserStore } from "../entities/user/hooks/useSafeUserStore";
+import { AppInfo } from "../features/app-info/ui/app-info";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -46,6 +47,7 @@ export default function RootLayout() {
 		<SafeAreaProvider>
 			<View style={{ flex: 1, backgroundColor: COLORS.colorBg }}>
 				<StatusBar style="light" />
+				<AppInfo />
 				<Stack
 					screenOptions={{
 						headerShown: false,
