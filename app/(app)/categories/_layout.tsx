@@ -3,6 +3,8 @@ import { Drawer } from "expo-router/drawer";
 import { useUserStore } from "../../../entities/user/store";
 import { COLORS, FONTSIZE } from "../../../shared/consts/styles";
 import { MenuButton } from "../../../features/menu-button/ui/menu-button";
+import { CustomDrawer } from "../../../features/drawer/ui/drawer";
+import { View, Text } from "react-native";
 
 export default function Layout() {
 	const user = useUserStore((state) => state.user);
@@ -12,12 +14,13 @@ export default function Layout() {
 	}
 	return (
 		<Drawer
+			drawerContent={(props) => <CustomDrawer {...props} />}
 			screenOptions={({ navigation }) => ({
 				headerTransparent: true,
+				headerTitleContainerStyle: { height: 30 },
 				headerStyle: {
 					backgroundColor: COLORS.colorBg,
-					height: 120,
-					shadowColor: COLORS.colorBg,
+					height: 80,
 				},
 				sceneContainerStyle: {
 					backgroundColor: COLORS.colorBg,
@@ -25,7 +28,7 @@ export default function Layout() {
 				},
 				drawerStyle: {
 					backgroundColor: COLORS.colorBg,
-					// width: 280,
+					borderRadius: 0,
 				},
 				headerTitleStyle: {
 					color: COLORS.colorFg,
@@ -33,7 +36,9 @@ export default function Layout() {
 					textTransform: "uppercase",
 					fontSize: FONTSIZE.xl,
 				},
-				headerBackgroundContainerStyle: { backgroundColor: COLORS.colorBg },
+				headerBackgroundContainerStyle: {
+					backgroundColor: COLORS.colorBg,
+				},
 				headerTitleAlign: "center",
 				headerLeft: () => {
 					return <MenuButton navigation={navigation} />;
@@ -43,15 +48,15 @@ export default function Layout() {
 			<Drawer.Screen
 				name="index"
 				options={{
-					title: "<-- Категории",
+					title: "Категории",
 				}}
 			/>
-			<Drawer.Screen
+			{/* <Drawer.Screen
 				name="[categoryName]"
 				options={{
 					title: "Категории",
 				}}
-			/>
+			/> */}
 		</Drawer>
 	);
 }

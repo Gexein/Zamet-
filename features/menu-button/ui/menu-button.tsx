@@ -36,5 +36,6 @@ export function MenuButton({
 const styles = StyleSheet.create({
 	button: {
 		paddingLeft: 15,
+		paddingBottom: 30,
 	},
 });
