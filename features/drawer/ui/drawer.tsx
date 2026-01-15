@@ -5,6 +5,7 @@ import {
 import { Image, StyleSheet, Text, ScrollView, View } from "react-native";
 import { COLORS, FONTSIZE } from "../../../shared/consts/styles";
 import CloseButton from "../../close-button/close-button";
+import CategoryItem from "../../category-item/ui/category-item";
 
 export function CustomDrawer(props: DrawerContentComponentProps) {
 	return (
@@ -21,21 +22,7 @@ export function CustomDrawer(props: DrawerContentComponentProps) {
 			</View>
 			<CloseButton navigation={props.navigation} />
 			<ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
-				<Text style={styles.category}>Content1</Text>
+				<CategoryItem navigation={props.navigation} name="Дядя Вася" />
 			</ScrollView>
 		</DrawerContentScrollView>
 	);
@@ -58,13 +45,4 @@ const styles = StyleSheet.create({
 		color: COLORS.colorFg,
 	},
 	content: { maxHeight: 560 },
-	category: {
-		color: COLORS.colorFg,
-		fontSize: FONTSIZE.xxl,
-		padding: 5,
-		// borderColor: COLORS.colorFg,
-		// borderWidth: 2,
-		marginBlock: 15,
-		width: 300,
-	},
 });
