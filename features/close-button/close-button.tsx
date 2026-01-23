@@ -1,12 +1,17 @@
 import { Pressable, StyleSheet } from "react-native";
 import { CloseIcon } from "../../shared/icons/CloseIcon";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
+import { useDrawerVisibility } from "../../shared/store";
 
-export default function CloseButton({
-	navigation,
-}: Pick<DrawerContentComponentProps, "navigation">) {
+export default function CloseButton({}: Pick<
+	DrawerContentComponentProps,
+	"navigation"
+>) {
+	const handleOnClick = () => {
+		useDrawerVisibility.getState().setIsOpen(false);
+	};
 	return (
-		<Pressable onPress={() => navigation.closeDrawer()} style={styles.button}>
+		<Pressable onPress={handleOnClick} style={styles.button}>
 			<CloseIcon />
 		</Pressable>
 	);

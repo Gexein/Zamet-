@@ -3,6 +3,7 @@ import { MenuIcon } from "../../../shared/icons/MenuIcon";
 import { useState } from "react";
 import { COLORS } from "../../../shared/consts/styles";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { useDrawerVisibility } from "../../../shared/store";
 
 export function MenuButton({
 	navigation,
@@ -18,6 +19,8 @@ export function MenuButton({
 		setIsClicked(false);
 	};
 	const onPress = () => {
+		useDrawerVisibility.getState().setIsOpen(true);
+
 		navigation.toggleDrawer();
 	};
 	return (

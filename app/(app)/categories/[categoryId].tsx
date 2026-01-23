@@ -4,7 +4,7 @@ import { COLORS } from "../../../shared/consts/styles";
 import { Suspense } from "react";
 
 function CategoryPage() {
-	const { categoryName } = useLocalSearchParams();
+	const { categoryId } = useLocalSearchParams();
 	return (
 		<View
 			style={{
@@ -16,7 +16,7 @@ function CategoryPage() {
 				gap: 50,
 			}}
 		>
-			<Text style={{ color: COLORS.colorFg }}>{categoryName}</Text>
+			<Text style={{ color: COLORS.colorFg }}>{categoryId}</Text>
 		</View>
 	);
 }

@@ -1,19 +1,15 @@
 import { View, Text } from "react-native";
-import { COLORS } from "../../../shared/consts/styles";
+import {
+	DRAWER_PAGE_WRAPPER,
+	PAGE_HEADING_STYLES,
+} from "../../../shared/consts/styles";
+import CategoryButtons from "../../../features/category-buttons/ui/category-buttons";
 
 export default function CategoriesPage() {
 	return (
-		<View
-			style={{
-				flex: 1,
-				height: 300,
-				alignItems: "center",
-				justifyContent: "center",
-				backgroundColor: COLORS.colorBg,
-				gap: 50,
-			}}
-		>
-			<Text style={{ color: COLORS.colorFg }}>Главная страница категорий</Text>
+		<View style={DRAWER_PAGE_WRAPPER.wrapper}>
+			<CategoryButtons />
+			<Text style={PAGE_HEADING_STYLES.title}>Главная страница категорий</Text>
 		</View>
 	);
 }

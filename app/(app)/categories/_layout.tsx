@@ -1,10 +1,12 @@
-import { Redirect } from "expo-router";
+import { Redirect, useNavigation } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { useUserStore } from "../../../entities/user/store";
 import { COLORS, FONTSIZE } from "../../../shared/consts/styles";
 import { MenuButton } from "../../../features/menu-button/ui/menu-button";
 import { CustomDrawer } from "../../../features/drawer/ui/drawer";
-import { View, Text } from "react-native";
+import { useCategoryStore } from "../../../entities/category/store";
+import CategoryButtons from "../../../features/category-buttons/ui/category-buttons";
+import CategoriesPage from ".";
 
 export default function Layout() {
 	const user = useUserStore((state) => state.user);
@@ -44,6 +46,7 @@ export default function Layout() {
 					return <MenuButton navigation={navigation} />;
 				},
 			})}
+			screenLayout={(props) => <CategoriesPage />}
 		>
 			<Drawer.Screen
 				name="index"
@@ -51,12 +54,24 @@ export default function Layout() {
 					title: "Категории",
 				}}
 			/>
-			{/* <Drawer.Screen
-				name="[categoryName]"
-				options={{
-					title: "Категории",
+			<Drawer.Screen
+				name="[categoryId]"
+				options={({ route }) => {
+					const params = route.params as { categoryId?: string } | undefined;
+					const categoryId = params?.categoryId
+						? Number(params.categoryId)
+						: null;
+					const category = categoryId
+						? useCategoryStore
+								.getState()
+								.categories.find((cat) => cat.id === categoryId)
+						: null;
+
+					return {
+						title: category?.name || "Категория",
+					};
 				}}
-			/> */}
+			/>
 		</Drawer>
 	);
 }
