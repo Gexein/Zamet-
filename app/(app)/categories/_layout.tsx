@@ -1,12 +1,9 @@
-import { Redirect, useNavigation } from "expo-router";
+import { Redirect } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { useUserStore } from "../../../entities/user/store";
 import { COLORS, FONTSIZE } from "../../../shared/consts/styles";
-import { MenuButton } from "../../../features/menu-button/ui/menu-button";
 import { CustomDrawer } from "../../../features/drawer/ui/drawer";
 import { useCategoryStore } from "../../../entities/category/store";
-import CategoryButtons from "../../../features/category-buttons/ui/category-buttons";
-import CategoriesPage from ".";
 
 export default function Layout() {
 	const user = useUserStore((state) => state.user);
@@ -35,18 +32,14 @@ export default function Layout() {
 				headerTitleStyle: {
 					color: COLORS.colorFg,
 					fontFamily: "Montserrat-Medium",
-					textTransform: "uppercase",
 					fontSize: FONTSIZE.xl,
 				},
 				headerBackgroundContainerStyle: {
 					backgroundColor: COLORS.colorBg,
 				},
 				headerTitleAlign: "center",
-				headerLeft: () => {
-					return <MenuButton navigation={navigation} />;
-				},
+				headerLeft: () => null,
 			})}
-			screenLayout={(props) => <CategoriesPage />}
 		>
 			<Drawer.Screen
 				name="index"
@@ -70,6 +63,12 @@ export default function Layout() {
 					return {
 						title: category?.name || "Категория",
 					};
+				}}
+			/>
+			<Drawer.Screen
+				name="add"
+				options={{
+					title: "Создание категорий",
 				}}
 			/>
 		</Drawer>

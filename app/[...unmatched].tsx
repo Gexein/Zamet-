@@ -1,6 +1,7 @@
 import { Text, View } from "react-native";
 import { COLORS, FONTSIZE } from "../shared/consts/styles";
-import { Link } from "expo-router";
+import { NavigationButton } from "../features/navigation-button/ui/navigation-button";
+import { NAV } from "../shared/consts/navigation";
 
 export default function Unmatched() {
 	return (
@@ -14,17 +15,7 @@ export default function Unmatched() {
 			>
 				Не нашли такого раздела 😢{" "}
 			</Text>
-			<Link href={"/"}>
-				<Text
-					style={{
-						color: COLORS.colorFg,
-						fontFamily: "Montserrat-Bold",
-						fontSize: FONTSIZE.xxl,
-					}}
-				>
-					На главную
-				</Text>
-			</Link>
+			<NavigationButton textContent="На главную" to={NAV.HOME} />
 		</View>
 	);
 }

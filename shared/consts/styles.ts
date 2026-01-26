@@ -36,5 +36,11 @@ export const DRAWER_PAGE_WRAPPER = StyleSheet.create({
 });
 
 export const PAGE_DESCRIPTION_STYLES = StyleSheet.create({
-	description: { fontSize: FONTSIZE.l },
+	description: { fontSize: FONTSIZE.l, color: COLORS.colorFg },
 });
+
+export const NAVIGATION_BUTTON_STYLES = {
+	color: COLORS.colorFg,
+	fontFamily: "Montserrat-Bold",
+	fontSize: FONTSIZE.xxl,
+};

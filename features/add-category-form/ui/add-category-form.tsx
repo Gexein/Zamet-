@@ -4,20 +4,26 @@ import { Input } from "../../../shared/components/Input/ui/Input";
 import { Button } from "../../../shared/components/Button/ui/Button";
 import { COLORS, FONTSIZE } from "../../../shared/consts/styles";
 import {
-	isNameValid,
-	isPasswordValid,
+	isCategoryDescriptionValid,
+	isCategoryNameValid,
+	isUserIdValid,
 } from "../../../shared/utils/inputValidators";
 import { useEffect, useRef, useState } from "react";
 import { useUserStore } from "../../../entities/user/store";
 import { useAppInfoStore } from "../../app-info/store";
-import { USER_MESSAGES } from "../../../shared/consts/messages";
+import { useCategoryStore } from "../../../entities/category/store";
+import { useRouter } from "expo-router";
+import { NAV } from "../../../shared/consts/navigation";
+import { CATEGORY_MESSAGES } from "../../../shared/consts/messages";
 
-export function RegForm() {
-	const [inputValue, setInputValue] = useState<string>("");
-	const [passwordValue, setPasswordValue] = useState<string>("");
-	const inputRef = useRef<InputRef>(null);
-	const passwordInputRef = useRef<InputRef>(null);
-	const register = useUserStore().createUser;
+export function AddCategoryForm() {
+	const [categoryName, setCategoryName] = useState<string>("");
+	const [description, setDescription] = useState<string>("");
+	const categoryInputRef = useRef<InputRef>(null);
+	const descriptionInputRef = useRef<InputRef>(null);
+	const register = useCategoryStore().createCategory;
+	const userId = useUserStore.getState().user?.id;
+	const navigate = useRouter();
 
 	const animatedValue = useRef(
 		new Animated.ValueXY({
@@ -37,25 +43,40 @@ export function RegForm() {
 	).current;
 
 	const onSubmitClick = async () => {
-		const nameCheck = isNameValid(inputValue);
-		const passwordCheck = isPasswordValid(passwordValue);
+		const categoryNameCheck = isCategoryNameValid(categoryName);
+		const categoryDescriptionCheck = isCategoryDescriptionValid(description);
+		const userCheck = isUserIdValid(userId);
 		useAppInfoStore.getState().clearMessage();
 
-		if (!nameCheck.isValid) {
-			useAppInfoStore.getState().setMessage(nameCheck.errorContent);
+		if (!categoryNameCheck.isValid) {
+			useAppInfoStore.getState().setMessage(categoryNameCheck.errorContent);
 		}
-		if (!passwordCheck.isValid) {
-			useAppInfoStore.getState().setMessage(passwordCheck.errorContent);
+		if (!categoryDescriptionCheck.isValid) {
+			useAppInfoStore
+				.getState()
+				.setMessage(categoryDescriptionCheck.errorContent);
 		}
-		if (nameCheck.isValid && passwordCheck.isValid) {
+		if (!userCheck.isValid) {
+			useAppInfoStore.getState().setMessage(userCheck.errorContent);
+			navigate.push(NAV.HOME);
+			return;
+		}
+		if (!userId) {
+			return;
+		}
+		if (
+			categoryNameCheck.isValid &&
+			categoryDescriptionCheck.isValid &&
+			userCheck.isValid
+		) {
 			try {
-				await register(inputValue, passwordValue);
-				useAppInfoStore.getState().setMessage(USER_MESSAGES.CREATE_SUCCESS);
+				await register(userId, categoryName, description);
+				useAppInfoStore.getState().setMessage(CATEGORY_MESSAGES.CREATE_SUCCESS);
 			} catch (error) {
 				const errorMessage =
 					error instanceof Error
 						? error.message
-						: "Не удалось создать пользователя";
+						: "Не удалось создать категорию";
 				useAppInfoStore.getState().setMessage(errorMessage);
 			}
 		}
@@ -81,11 +102,11 @@ export function RegForm() {
 
 	useEffect(() => {
 		Animated.timing(animatedValue3, {
-			toValue: inputValue.length > 0 ? 0 : 100,
+			toValue: categoryName.length > 0 ? 0 : 100,
 			duration: 300,
 			useNativeDriver: false,
 		}).start();
-	}, [inputValue]);
+	}, [categoryName]);
 
 	return (
 		<View style={styles.form}>
@@ -95,26 +116,26 @@ export function RegForm() {
 				}}
 			>
 				<Input
-					ref={inputRef}
+					ref={categoryInputRef}
 					label="Введите имя"
 					placeholder="Имя"
 					placeholderTextColor={COLORS.colorBg}
-					value={inputValue}
+					value={categoryName}
 					onChange={(event: TextInputChangeEvent) =>
-						setInputValue(event.nativeEvent.text)
+						setCategoryName(event.nativeEvent.text)
 					}
-					setInputValue={setInputValue}
+					setInputValue={setCategoryName}
 				/>
 				<Input
-					ref={passwordInputRef}
+					ref={descriptionInputRef}
 					label="Введите пароль"
 					placeholder="Пароль"
 					placeholderTextColor={COLORS.colorBg}
-					value={passwordValue}
+					value={description}
 					onChange={(event: TextInputChangeEvent) =>
-						setPasswordValue(event.nativeEvent.text)
+						setDescription(event.nativeEvent.text)
 					}
-					setInputValue={setPasswordValue}
+					setInputValue={setDescription}
 				/>
 			</Animated.View>
 			<Animated.View
@@ -122,20 +143,17 @@ export function RegForm() {
 					transform: [{ translateX: animatedValue2 }],
 				}}
 			>
-				<Button
-					disabled={inputValue.length < 1 || passwordValue.length < 1}
-					onPress={onSubmitClick}
-				>
+				<Button disabled={categoryName.length < 1} onPress={onSubmitClick}>
 					<Animated.Text style={[styles.buttonText, { color: color }]}>
 						Начать
 					</Animated.Text>
 				</Button>
 				{/* <Text>
-					И тут нужно будет выбрать тему, светлая или темная. Будет радио
-					"Оставить темную тему" / "Переключиться на светлую тему" .Здесь будет
-					радио с 2 вариантами . "Использовать пароль для входа в приложение" /
-					"Использовать пароль только для сброса / изменения личных данных"
-				</Text> */}
+                    И тут нужно будет выбрать тему, светлая или темная. Будет радио
+                    "Оставить темную тему" / "Переключиться на светлую тему" .Здесь будет
+                    радио с 2 вариантами . "Использовать пароль для входа в приложение" /
+                    "Использовать пароль только для сброса / изменения личных данных"
+                </Text> */}
 			</Animated.View>
 		</View>
 	);

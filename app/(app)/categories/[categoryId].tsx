@@ -26,7 +26,6 @@ export default function CategoryPageSafe() {
 		<Suspense
 			fallback={
 				<View>
-					<Text>ФОЛБЕК</Text>
 					<ActivityIndicator size={"large"} color={COLORS.colorOrange} />
 				</View>
 			}

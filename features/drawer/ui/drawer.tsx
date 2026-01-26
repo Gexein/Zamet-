@@ -11,6 +11,7 @@ import { useDrawerVisibility } from "../../../shared/store";
 import { useEffect } from "react";
 import useGetActiveRoute from "../../../shared/hooks/useGetActiveRoute";
 import { useCategoryStore } from "../../../entities/category/store";
+import CategoryList from "../../categoryList/ui/category-list";
 
 export function CustomDrawer(props: DrawerContentComponentProps) {
 	const isDrawerOpened = useDrawerVisibility((state) => state.isOpen);
@@ -43,20 +44,10 @@ export function CustomDrawer(props: DrawerContentComponentProps) {
 			</View>
 			<CloseButton navigation={props.navigation} />
 			<ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
-				{useCategoryStore.getState().categories.length > 0 ? (
-					useCategoryStore
-						.getState()
-						.categories.map((category) => (
-							<CategoryItem
-								navigation={props.navigation}
-								name={category.name}
-								id={category.id}
-								active={categoryId === category.id}
-							/>
-						))
-				) : (
-					<Text style={styles.categoryEmpty}>Список категорий пуст</Text>
-				)}
+				<CategoryList
+					activeCategoryId={categoryId}
+					navigation={props.navigation}
+				/>
 			</ScrollView>
 		</DrawerContentScrollView>
 	);
