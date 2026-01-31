@@ -1,5 +1,4 @@
 import * as SQlite from "expo-sqlite";
-import type { SQLiteDatabase } from "expo-sqlite";
 import { SqlActions } from "../consts/db";
 
 export class DataBaseService {
@@ -13,7 +12,7 @@ export class DataBaseService {
 	}
 	async executeSql<T>(
 		sql: string,
-		params: any[] = []
+		params: any[] = [],
 	): Promise<{ rows: T[]; insertId?: number; rowsAffected: number }> {
 		if (!this.db) {
 			await this.initializeDb();
@@ -21,7 +20,7 @@ export class DataBaseService {
 		const sqlQueryUppercased = sql.trim().toUpperCase();
 		if (!this.db) {
 			console.error(
-				"Ошибка в методе exequteSql при обращении к базе данных, this.db = null | undefined"
+				"Ошибка в методе exequteSql при обращении к базе данных, this.db = null | undefined",
 			);
 			return { rows: [], rowsAffected: 0 };
 		}
@@ -52,7 +51,7 @@ export class DataBaseService {
 				sql,
 				params,
 				"error: ",
-				error
+				error,
 			);
 			throw error;
 		}
@@ -82,7 +81,7 @@ export class DataBaseService {
 				throw new Error("Ошибка. База данных не найдена");
 			}
 			const result = await this.db?.getAllAsync<{ name: string }>(
-				`${SqlActions.SELECT} name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`
+				`${SqlActions.SELECT} name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`,
 			);
 			return result.map((row) => row.name);
 		} catch (error) {

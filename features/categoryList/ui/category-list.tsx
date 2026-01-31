@@ -10,21 +10,21 @@ type TProps = {
 };
 
 export default function CategoryList({ activeCategoryId, navigation }: TProps) {
-	const categories = useCategoryStore.getState().categories;
+	const categories = useCategoryStore((state) => state.categories);
 	if (!categories || categories.length < 1) {
 		return <Text style={PAGE_HEADING_STYLES.title}>Список категорий пуст</Text>;
 	}
 	return (
 		<>
-			{categories.map((category) => {
+			{categories.map((category) => (
 				<CategoryItem
 					navigation={navigation}
 					name={category.name}
 					id={category.id}
 					active={activeCategoryId === category.id}
 					key={`${category.id}${category.created_at}`}
-				/>;
-			})}
+				/>
+			))}
 		</>
 	);
 }

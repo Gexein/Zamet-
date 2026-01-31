@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { IUser, IUserState } from "../types";
 import { UserStorage } from "../storage";
+import { useCategoryStore } from "../../category/store";
 
 export const useUserStore = create<IUserState>((set, get) => ({
 	user: null,
@@ -12,23 +13,12 @@ export const useUserStore = create<IUserState>((set, get) => ({
 		if (get().isInitialized) return;
 		set({ isLoading: true });
 		try {
-			// вот тут конкретно инициализация таблицы пользователя
 			await get().storage.initializeUserDb();
-
-			// а тут мы инициализируем вообще все таблицы
-			const { CategoryStorage } = await import("../../category/storage");
-			const { CategorySubStorage } = await import("../../categorySub/storage");
-			const { EntryStorage } = await import("../../entry/storage");
-
-			const categoryStorage = new CategoryStorage();
-			const categorySubStorage = new CategorySubStorage();
-			const entryStorage = new EntryStorage();
-
-			await categoryStorage.initializeCategoryDb();
-			await categorySubStorage.initializeCategorySubDb();
-			await entryStorage.initializeEntryDb();
-
 			const user = await get().storage.getUserData();
+
+			if(user) {
+				await useCategoryStore.getState().initialize(user.id);
+			}
 			set({ user, isInitialized: true, isLoading: false });
 			console.log(
 				"UserStore инициализирован:",

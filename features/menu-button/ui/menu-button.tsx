@@ -1,10 +1,14 @@
-import { Pressable, PressableProps, StyleSheet } from "react-native";
+import { PressableProps, StyleSheet } from "react-native";
 import { MenuIcon } from "../../../shared/icons/MenuIcon";
 import { useState } from "react";
 import { COLORS } from "../../../shared/consts/styles";
 import { useDrawerVisibility } from "../../../shared/store";
+import { IconButton } from "../../../shared/components/IconButton/ui/IconButton";
 
-export function MenuButton({ ...props }: PressableProps) {
+export function MenuButton({
+	toolTipText,
+	...props
+}: PressableProps & { toolTipText?: string }) {
 	const [isClicked, setIsClicked] = useState<boolean>(false);
 	const onPressIn = () => {
 		setIsClicked(true);
@@ -16,21 +20,26 @@ export function MenuButton({ ...props }: PressableProps) {
 		useDrawerVisibility.getState().setIsOpen(true);
 	};
 	return (
-		<Pressable
-			{...props}
+		<IconButton
 			onPressIn={onPressIn}
 			onPressOut={onPressOut}
 			onPress={onPress}
 			style={styles.button}
-		>
-			<MenuIcon color={isClicked ? COLORS.colorOrange : undefined} size={35} />
-		</Pressable>
+			toolTipText={toolTipText}
+			icon={
+				<MenuIcon
+					color={isClicked ? COLORS.colorOrange : undefined}
+					size={35}
+				/>
+			}
+			{...props}
+			toolTipXPosition="left"
+		/>
 	);
 }
 
 const styles = StyleSheet.create({
 	button: {
-		paddingLeft: 15,
 		paddingBottom: 30,
 	},
 });

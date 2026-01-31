@@ -5,14 +5,14 @@ import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useEffect } from "react";
-import { useSafeUserStore } from "../entities/user/hooks/useSafeUserStore";
 import { AppInfo } from "../features/app-info/ui/app-info";
+import { useUserStore } from "../entities/user/store";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-	const initialize = useSafeUserStore((state) => state.initialize);
-	const isInitialized = useSafeUserStore((state) => state.isInitialized);
+	const initialize = useUserStore((state) => state.initialize);
+	const isInitialized = useUserStore((state) => state.isInitialized);
 	const [fontsLoaded, fontError] = useFonts({
 		Montserrat: require("../assets/fonts/Montserrat-Regular.ttf"),
 		"Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),

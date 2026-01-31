@@ -2,13 +2,10 @@ import {
 	Animated,
 	Pressable,
 	PressableProps,
-	StyleProp,
 	StyleSheet,
-	ViewStyle,
-	View,
 	GestureResponderEvent,
 } from "react-native";
-import { COLORS } from '../../../consts/styles';
+import { COLORS } from "../../../consts/styles";
 import { useEffect, useRef } from "react";
 
 export function Button({
@@ -22,14 +19,14 @@ export function Button({
 		animatedValue.interpolate({
 			inputRange: [0, 100],
 			outputRange: [COLORS.colorDarkLight, COLORS.colorOrange],
-		})
+		}),
 	).current;
 	const colorAnimaFunc = useRef(
 		Animated.timing(animatedValue, {
 			toValue: 0,
 			duration: 500,
 			useNativeDriver: true,
-		})
+		}),
 	).current;
 
 	const colorAnimaReversedFunc = useRef(
@@ -37,7 +34,7 @@ export function Button({
 			toValue: 100,
 			duration: 500,
 			useNativeDriver: true,
-		})
+		}),
 	).current;
 
 	const scaleIn = (e: GestureResponderEvent) => {

@@ -44,3 +44,8 @@ export const NAVIGATION_BUTTON_STYLES = {
 	fontFamily: "Montserrat-Bold",
 	fontSize: FONTSIZE.xxl,
 };
+
+export const TOOLTIP_STYLES = StyleSheet.create({
+	toolTip: { fontSize: FONTSIZE.s, color: COLORS.colorDarkLight },
+	container: { position: "absolute", width: 100 },
+});

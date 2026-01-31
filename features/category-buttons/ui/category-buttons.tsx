@@ -1,8 +1,5 @@
-import { View, Text, useWindowDimensions } from "react-native";
-import { MenuIcon } from "../../../shared/icons/MenuIcon";
-import { CloseIcon } from "../../../shared/icons/CloseIcon";
+import { View, useWindowDimensions } from "react-native";
 import { MenuButton } from "../../menu-button/ui/menu-button";
-import { AddIcon } from "../../../shared/icons/AddIcon";
 import { AddButton } from "../../add-button/ui/add-button";
 
 export default function CategoryButtons() {
@@ -17,8 +14,8 @@ export default function CategoryButtons() {
 				paddingInline: 15,
 			}}
 		>
-			<MenuButton />
-			<AddButton />
+			<MenuButton toolTipText="Категории" />
+			<AddButton toolTipText="Создать" />
 		</View>
 	);
 }

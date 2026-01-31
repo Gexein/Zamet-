@@ -6,11 +6,9 @@ import {
 import { Image, StyleSheet, ScrollView, View, Text } from "react-native";
 import { COLORS, FONTSIZE } from "../../../shared/consts/styles";
 import CloseButton from "../../close-button/close-button";
-import CategoryItem from "../../category-item/ui/category-item";
 import { useDrawerVisibility } from "../../../shared/store";
 import { useEffect } from "react";
 import useGetActiveRoute from "../../../shared/hooks/useGetActiveRoute";
-import { useCategoryStore } from "../../../entities/category/store";
 import CategoryList from "../../categoryList/ui/category-list";
 
 export function CustomDrawer(props: DrawerContentComponentProps) {
