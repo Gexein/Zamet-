@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { ICategoryState, ICategory } from "../types";
 import { CategoryStorage } from "../storage";
+import { CATEGORY_ERRORS } from "../../../shared/consts/errors";
 
 export const useCategoryStore = create<ICategoryState>((set, get) => ({
 	categories: [],
@@ -17,7 +18,7 @@ export const useCategoryStore = create<ICategoryState>((set, get) => ({
 			const categories = await get().storage.getAllCategories(userId);
 			set({ categories, isInitialized: true, isLoading: false });
 		} catch (error) {
-			console.error("Ошибка инициализации CategoryStore:", error);
+			console.error(CATEGORY_ERRORS.INIT_STORE, error);
 			set({ isLoading: false, isInitialized: true });
 		}
 	},
@@ -28,7 +29,7 @@ export const useCategoryStore = create<ICategoryState>((set, get) => ({
 			const categories = await get().storage.getAllCategories(userId);
 			set({ categories, isLoading: false });
 		} catch (error) {
-			console.error("Ошибка загрузки категорий:", error);
+			console.error(CATEGORY_ERRORS.LOAD, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -48,7 +49,7 @@ export const useCategoryStore = create<ICategoryState>((set, get) => ({
 			}));
 			return category;
 		} catch (error) {
-			console.error("Ошибка создания категории:", error);
+			console.error(CATEGORY_ERRORS.CREATE_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -73,7 +74,7 @@ export const useCategoryStore = create<ICategoryState>((set, get) => ({
 				isLoading: false,
 			}));
 		} catch (error) {
-			console.error("Ошибка обновления имени категории:", error);
+			console.error(CATEGORY_ERRORS.UPDATE_NAME_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -90,7 +91,7 @@ export const useCategoryStore = create<ICategoryState>((set, get) => ({
 				isLoading: false,
 			}));
 		} catch (error) {
-			console.error("Ошибка удаления категории:", error);
+			console.error(CATEGORY_ERRORS.DELETE_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -115,7 +116,7 @@ export const useCategoryStore = create<ICategoryState>((set, get) => ({
 				isLoading: false,
 			}));
 		} catch (error) {
-			console.error("Ошибка обновления описания категории:", error);
+			console.error(CATEGORY_ERRORS.UPDATE_DESCRIPTION_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}

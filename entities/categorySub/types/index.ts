@@ -31,7 +31,7 @@ export interface ICategorySubState {
 	setCurrentSubcategory: (subcategory: ICategorySub | null) => void;
 	updateSubcategoryDescription: (
 		id: number,
-		categotyId: number,
+		categoryId: number,
 		description: ICategorySub["description"]
 	) => Promise<void>;
 }

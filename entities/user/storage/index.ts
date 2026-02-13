@@ -1,4 +1,5 @@
-import { SqlActions } from "../../../shared/consts/db";
+import { SQL_ACTIONS } from "../../../shared/consts/db";
+import { USER_ERRORS } from "../../../shared/consts/errors";
 import { DataBaseService } from "../../../shared/database";
 import { IUser } from "../types";
 
@@ -8,13 +9,13 @@ export class UserStorage {
 	constructor() {
 		this.db = new DataBaseService();
 		this.initializeUserDb().catch((error) => {
-			console.error("Ошибка инициализации БД:", error);
+			console.error(USER_ERRORS.INIT_DB, error);
 		});
 	}
 
 	async initializeUserDb(): Promise<void> {
 		await this.db.executeSql(`
-      ${SqlActions.CREATE} TABLE IF NOT EXISTS users (
+      ${SQL_ACTIONS.CREATE} TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
 		password TEXT NOT NULL,
@@ -29,7 +30,7 @@ export class UserStorage {
 	}
 	async getUserData(): Promise<IUser | null> {
 		const { rows } = await this.db.executeSql<IUser>(
-			`${SqlActions.SELECT} * FROM users LIMIT 1`
+			`${SQL_ACTIONS.SELECT} * FROM users LIMIT 1`
 		);
 		return rows[0] || null;
 	}
@@ -40,10 +41,10 @@ export class UserStorage {
 		theme: IUser["theme"]
 	): Promise<IUser> {
 		const { insertId } = await this.db.executeSql(
-			`${SqlActions.INSERT} INTO users (name, theme, password) VALUES (?, ?, ?)`,
+			`${SQL_ACTIONS.INSERT} INTO users (name, theme, password) VALUES (?, ?, ?)`,
 			[name, theme, password]
 		);
-		if (!insertId) throw new Error("Не удалось создать пользователя");
+		if (!insertId) throw new Error(USER_ERRORS.CREATE_FAILED);
 		return {
 			id: insertId,
 			name,
@@ -56,11 +57,11 @@ export class UserStorage {
 
 	async updateUserName(id: IUser["id"], name: IUser["name"]): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.UPDATE} users SET name = ? WHERE id = ?`,
+			`${SQL_ACTIONS.UPDATE} users SET name = ? WHERE id = ?`,
 			[name, id]
 		);
 		if (rowsAffected === 0)
-			throw new Error("Не удалось обновить имя пользователя");
+			throw new Error(USER_ERRORS.UPDATE_NAME);
 	}
 
 	async updateUserPassword(
@@ -68,19 +69,19 @@ export class UserStorage {
 		password: IUser["password"]
 	): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.UPDATE} users SET password = ? WHERE id = ?`,
+			`${SQL_ACTIONS.UPDATE} users SET password = ? WHERE id = ?`,
 			[password, id]
 		);
 		if (rowsAffected === 0)
-			throw new Error("Не удалось обновить пароль пользователя");
+			throw new Error(USER_ERRORS.UPDATE_PASSWORD);
 	}
 
 	async updateUserTheme(id: IUser["id"], theme: IUser["theme"]): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.UPDATE} users SET theme = ? WHERE id = ?`,
+			`${SQL_ACTIONS.UPDATE} users SET theme = ? WHERE id = ?`,
 			[theme, id]
 		);
 		if (rowsAffected === 0)
-			throw new Error("Не удалось обновить тему пользователя");
+			throw new Error(USER_ERRORS.UPDATE_THEME);
 	}
 }

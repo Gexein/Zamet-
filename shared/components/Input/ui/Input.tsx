@@ -1,12 +1,11 @@
 import {
 	TextInput,
 	type TextInputProps,
-	StyleSheet,
 	View,
 	Animated,
 	Text,
 } from "react-native";
-import { COLORS, FONTSIZE } from "../../../consts/styles";
+import { INPUT_STYLES } from "../../../consts/styles";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import { InputRef } from "../types";
 
@@ -15,8 +14,9 @@ export const Input = forwardRef<
 	TextInputProps & {
 		setInputValue?: (text: string) => void;
 		label?: string;
+		width?: number;
 	}
->((props, ref) => {
+>(({ width, ...props }, ref) => {
 	const inputRef = useRef<TextInput>(null);
 	const scaleValue = useRef(new Animated.Value(1)).current;
 	const scaleIn = () => {
@@ -46,13 +46,13 @@ export const Input = forwardRef<
 	}));
 
 	return (
-		<View style={styles.container}>
-			{props.label && <Text style={styles.label}>{props.label}</Text>}
+		<View style={INPUT_STYLES.container}>
+			{props.label && <Text style={INPUT_STYLES.label}>{props.label}</Text>}
 			<Animated.View style={{ transform: [{ scale: scaleValue }] }}>
 				<TextInput
 					{...props}
 					ref={inputRef}
-					style={styles.input}
+					style={{...INPUT_STYLES.input, width: width ? width : 200}}
 					onFocus={scaleIn}
 					onBlur={scaleOut}
 				/>
@@ -61,24 +61,4 @@ export const Input = forwardRef<
 	);
 });
 
-const styles = StyleSheet.create({
-	container: {
-		rowGap: 10,
-	},
-	input: {
-		backgroundColor: COLORS.colorDarkLight,
-		width: 200,
-		color: COLORS.colorFg,
-		borderRadius: 5,
-		paddingHorizontal: 10,
-		fontFamily: "Montserrat-Light",
-		fontSize: FONTSIZE.l,
-	},
 
-	label: {
-		color: COLORS.colorFg,
-		fontSize: FONTSIZE.s,
-		alignSelf: "flex-start",
-		fontFamily: "Montserrat-Thin",
-	},
-});

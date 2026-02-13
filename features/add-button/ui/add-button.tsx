@@ -20,7 +20,7 @@ export function AddButton({
 	};
 
 	const onPress = () => {
-		navigate.push(NAV.ADD_CATEGORY);
+		navigate.replace(NAV.ADD_CATEGORY);
 	};
 
 	return (

@@ -8,6 +8,7 @@ export const COLORS = {
 } as const;
 
 export const FONTSIZE = {
+	ms: 8,
 	s: 12,
 	m: 14,
 	l: 16,
@@ -39,13 +40,51 @@ export const PAGE_DESCRIPTION_STYLES = StyleSheet.create({
 	description: { fontSize: FONTSIZE.l, color: COLORS.colorFg },
 });
 
-export const NAVIGATION_BUTTON_STYLES = {
-	color: COLORS.colorFg,
-	fontFamily: "Montserrat-Bold",
-	fontSize: FONTSIZE.xxl,
-};
-
 export const TOOLTIP_STYLES = StyleSheet.create({
 	toolTip: { fontSize: FONTSIZE.s, color: COLORS.colorDarkLight },
 	container: { position: "absolute", width: 100 },
+});
+
+export const FORM_STYLES = StyleSheet.create({
+	form: {
+		rowGap: 35,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	inputsWrapper: {rowGap: 35},
+	buttonText: {
+		fontSize: FONTSIZE.xl,
+		fontFamily: "Montserrat",
+	},
+});
+
+export const INPUT_STYLES = StyleSheet.create({
+	container: {
+		rowGap: 10,
+	},
+	input: {
+		backgroundColor: COLORS.colorDarkLight,
+		color: COLORS.colorFg,
+		borderRadius: 5,
+		paddingHorizontal: 10,
+		fontFamily: "Montserrat-Light",
+		fontSize: FONTSIZE.l,
+	},
+
+	label: {
+		color: COLORS.colorFg,
+		fontSize: FONTSIZE.s,
+		alignSelf: "flex-start",
+		fontFamily: "Montserrat-Thin",
+	},
+});
+
+export const P_STYLES = StyleSheet.create({
+	p: {
+		fontSize: FONTSIZE.m,
+		color: COLORS.colorFg,
+		textAlign: "center",
+		paddingVertical: 30,
+		fontFamily: "Montserrat-Thin",
+	},
 });

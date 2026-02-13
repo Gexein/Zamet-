@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import { ActivityIndicator, Text, View } from "react-native";
-import { COLORS } from "../../../shared/consts/styles";
+import { COLORS, PAGE_HEADING_STYLES } from "../../../shared/consts/styles";
 import { Suspense } from "react";
 
 function CategoryPage() {
@@ -16,7 +16,7 @@ function CategoryPage() {
 				gap: 50,
 			}}
 		>
-			<Text style={{ color: COLORS.colorFg }}>{categoryId}</Text>
+			<Text style={PAGE_HEADING_STYLES.title}>{categoryId}</Text>
 		</View>
 	);
 }

@@ -1,4 +1,5 @@
-import { SqlActions } from "../../../shared/consts/db";
+import { SQL_ACTIONS } from "../../../shared/consts/db";
+import { ENTRY_ERRORS } from "../../../shared/consts/errors";
 import { DataBaseService } from "../../../shared/database";
 import { IEntry } from "../types";
 
@@ -10,7 +11,7 @@ export class EntryStorage {
 
 	async initializeEntryDb(): Promise<void> {
 		await this.db.executeSql(`
-			${SqlActions.CREATE} TABLE IF NOT EXISTS entries (
+			${SQL_ACTIONS.CREATE} TABLE IF NOT EXISTS entries (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				category_sub_id INTEGER NOT NULL,
 				name TEXT NOT NULL,
@@ -25,7 +26,7 @@ export class EntryStorage {
 
 	async getAllEntries(categorySubId: number): Promise<IEntry[]> {
 		const { rows } = await this.db.executeSql<IEntry>(
-			`${SqlActions.SELECT} * FROM entries WHERE category_sub_id = ? ORDER BY created_at DESC`,
+			`${SQL_ACTIONS.SELECT} * FROM entries WHERE category_sub_id = ? ORDER BY created_at DESC`,
 			[categorySubId]
 		);
 		return rows;
@@ -36,7 +37,7 @@ export class EntryStorage {
 		categorySubId: number
 	): Promise<IEntry | null> {
 		const { rows } = await this.db.executeSql<IEntry>(
-			`${SqlActions.SELECT} * FROM entries WHERE id = ? AND category_sub_id = ?`,
+			`${SQL_ACTIONS.SELECT} * FROM entries WHERE id = ? AND category_sub_id = ?`,
 			[id, categorySubId]
 		);
 		return rows[0] || null;
@@ -44,18 +45,26 @@ export class EntryStorage {
 
 	async createEntry(
 		categorySubId: number,
-		name: IEntry["name"],
-		description?: IEntry["description"],
+		name?: IEntry["name"],
+		description: IEntry["description"],
 		date?: IEntry["date"]
 	): Promise<IEntry> {
 		const { insertId } = await this.db.executeSql(
-			`${SqlActions.INSERT} INTO entries (category_sub_id, name, description, date) VALUES (?, ?, ?, ?)`,
-			[categorySubId, name, description || "", date || null]
+			`${SQL_ACTIONS.INSERT} INTO entries (category_sub_id, name, description, date) VALUES (?, ?, ?, ?)`,
+			[categorySubId, name || "", description, date || null]
 		);
-		if (!insertId) throw new Error("Не удалось создать запись");
+		if (!insertId) throw new Error(ENTRY_ERRORS.CREATE_FAILED);
+
+		if (!name || name.trim().length === 0) {
+			const autoName = `Запись#${insertId}`;
+			await this.db.executeSql(
+				`${SQL_ACTIONS.UPDATE} entries SET name = ? WHERE id = ?`,
+				[autoName, insertId]
+			);
+		}
 
 		const entry = await this.getEntryById(insertId, categorySubId);
-		if (!entry) throw new Error("Не удалось получить созданную запись");
+		if (!entry) throw new Error(ENTRY_ERRORS.CREATE_GET_FAILED);
 
 		return entry;
 	}
@@ -66,10 +75,10 @@ export class EntryStorage {
 		name: IEntry["name"]
 	): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.UPDATE} entries SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_sub_id = ?`,
+			`${SQL_ACTIONS.UPDATE} entries SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_sub_id = ?`,
 			[name, id, categorySubId]
 		);
-		if (rowsAffected === 0) throw new Error("Не удалось обновить имя записи");
+		if (rowsAffected === 0) throw new Error(ENTRY_ERRORS.UPDATE_NAME);
 	}
 
 	async updateEntryDescription(
@@ -78,11 +87,11 @@ export class EntryStorage {
 		description: IEntry["description"]
 	): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.UPDATE} entries SET description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_sub_id = ?`,
+			`${SQL_ACTIONS.UPDATE} entries SET description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_sub_id = ?`,
 			[description, id, categorySubId]
 		);
 		if (rowsAffected === 0)
-			throw new Error("Не удалось обновить описание записи");
+			throw new Error(ENTRY_ERRORS.UPDATE_DESCRIPTION);
 	}
 
 	async updateEntryDate(
@@ -91,18 +100,18 @@ export class EntryStorage {
 		date?: IEntry["date"]
 	): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.UPDATE} entries SET date = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_sub_id = ?`,
+			`${SQL_ACTIONS.UPDATE} entries SET date = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_sub_id = ?`,
 			[date || null, id, categorySubId]
 		);
-		if (rowsAffected === 0) throw new Error("Не удалось обновить дату записи");
+		if (rowsAffected === 0) throw new Error(ENTRY_ERRORS.UPDATE_DATE);
 	}
 
 	async deleteEntry(id: number, categorySubId: number): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.DELETE} FROM entries WHERE id = ? AND category_sub_id = ?`,
+			`${SQL_ACTIONS.DELETE} FROM entries WHERE id = ? AND category_sub_id = ?`,
 			[id, categorySubId]
 		);
-		if (rowsAffected === 0) throw new Error("Не удалось удалить запись");
+		if (rowsAffected === 0) throw new Error(ENTRY_ERRORS.DELETE);
 	}
 }
 

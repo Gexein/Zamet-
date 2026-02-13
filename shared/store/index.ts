@@ -1,7 +1,12 @@
 import { create } from "zustand";
-import { IDrawerState } from "../types";
 
-export const useDrawerVisibility = create<IDrawerState>((set, get) => ({
+interface IDrawerState {
+	isOpen: boolean;
+	setIsOpen: (isOpen: IDrawerState["isOpen"]) => void;
+	toggle: () => void;
+}
+
+export const useDrawerVisibility = create<IDrawerState>((set, _get) => ({
 	isOpen: false,
 
 	setIsOpen: (isOpen: IDrawerState["isOpen"]) => set({ isOpen: isOpen }),

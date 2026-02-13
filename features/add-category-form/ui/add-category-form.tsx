@@ -1,8 +1,8 @@
-import { View, StyleSheet, TextInputChangeEvent, Animated } from "react-native";
+import { View,  TextInputChangeEvent, Animated } from "react-native";
 import type { InputRef } from "../../../shared/components/Input/types";
 import { Input } from "../../../shared/components/Input/ui/Input";
 import { Button } from "../../../shared/components/Button/ui/Button";
-import { COLORS, FONTSIZE } from "../../../shared/consts/styles";
+import { COLORS, FORM_STYLES } from "../../../shared/consts/styles";
 import {
 	isCategoryDescriptionValid,
 	isCategoryNameValid,
@@ -15,6 +15,8 @@ import { useCategoryStore } from "../../../entities/category/store";
 import { useRouter } from "expo-router";
 import { NAV } from "../../../shared/consts/navigation";
 import { CATEGORY_MESSAGES } from "../../../shared/consts/messages";
+import { CATEGORY_ERRORS } from "../../../shared/consts/errors";
+import { getScreenWidth } from "../../../shared/utils/getScreenWidth";
 
 export function AddCategoryForm() {
 	const [categoryName, setCategoryName] = useState<string>("");
@@ -24,6 +26,8 @@ export function AddCategoryForm() {
 	const register = useCategoryStore().createCategory;
 	const userId = useUserStore.getState().user?.id;
 	const navigate = useRouter();
+
+	const nodesWidth = getScreenWidth(0.75)
 
 	const animatedValue = useRef(
 		new Animated.ValueXY({
@@ -72,11 +76,14 @@ export function AddCategoryForm() {
 			try {
 				await register(userId, categoryName, description);
 				useAppInfoStore.getState().setMessage(CATEGORY_MESSAGES.CREATE_SUCCESS);
+				setCategoryName('');
+				setDescription('');
+				navigate.replace(NAV.CATEGORIES);
 			} catch (error) {
 				const errorMessage =
 					error instanceof Error
 						? error.message
-						: "Не удалось создать категорию";
+						: CATEGORY_ERRORS.CREATE_FAILED;
 				useAppInfoStore.getState().setMessage(errorMessage);
 			}
 		}
@@ -102,40 +109,40 @@ export function AddCategoryForm() {
 
 	useEffect(() => {
 		Animated.timing(animatedValue3, {
-			toValue: categoryName.length > 0 ? 0 : 100,
+			toValue: categoryName.length > 2 ? 0 : 100,
 			duration: 300,
 			useNativeDriver: false,
 		}).start();
 	}, [categoryName]);
 
 	return (
-		<View style={styles.form}>
+		<View style={FORM_STYLES.form}>
 			<Animated.View
 				style={{
-					transform: [{ translateX: animatedValue2 }],
+					transform: [{ translateX: animatedValue2 }], ...FORM_STYLES.inputsWrapper
 				}}
 			>
 				<Input
 					ref={categoryInputRef}
-					label="Введите имя"
-					placeholder="Имя"
+					placeholder="Название категории"
 					placeholderTextColor={COLORS.colorBg}
 					value={categoryName}
 					onChange={(event: TextInputChangeEvent) =>
 						setCategoryName(event.nativeEvent.text)
 					}
 					setInputValue={setCategoryName}
+					width={nodesWidth}
 				/>
 				<Input
 					ref={descriptionInputRef}
-					label="Введите пароль"
-					placeholder="Пароль"
+					placeholder="Описание (опционально)"
 					placeholderTextColor={COLORS.colorBg}
 					value={description}
 					onChange={(event: TextInputChangeEvent) =>
 						setDescription(event.nativeEvent.text)
 					}
 					setInputValue={setDescription}
+					width={nodesWidth}
 				/>
 			</Animated.View>
 			<Animated.View
@@ -143,30 +150,14 @@ export function AddCategoryForm() {
 					transform: [{ translateX: animatedValue2 }],
 				}}
 			>
-				<Button disabled={categoryName.length < 1} onPress={onSubmitClick}>
-					<Animated.Text style={[styles.buttonText, { color: color }]}>
-						Начать
+				<Button disabled={categoryName.length < 3} onPress={onSubmitClick} width={nodesWidth}>
+					<Animated.Text style={[FORM_STYLES.buttonText, { color: color }]}>
+						Создать
 					</Animated.Text>
 				</Button>
-				{/* <Text>
-                    И тут нужно будет выбрать тему, светлая или темная. Будет радио
-                    "Оставить темную тему" / "Переключиться на светлую тему" .Здесь будет
-                    радио с 2 вариантами . "Использовать пароль для входа в приложение" /
-                    "Использовать пароль только для сброса / изменения личных данных"
-                </Text> */}
 			</Animated.View>
 		</View>
 	);
 }
 
-const styles = StyleSheet.create({
-	form: {
-		rowGap: 25,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	buttonText: {
-		fontSize: FONTSIZE.xl,
-		fontFamily: "Montserrat",
-	},
-});
+

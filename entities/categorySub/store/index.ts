@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { ICategorySubState, ICategorySub } from "../types";
 import { CategorySubStorage } from "../storage";
+import { CATEGORY_SUB_ERRORS } from "../../../shared/consts/errors";
 
 export const useCategorySubStore = create<ICategorySubState>((set, get) => ({
 	subcategories: [],
@@ -17,7 +18,7 @@ export const useCategorySubStore = create<ICategorySubState>((set, get) => ({
 			const subcategories = await get().storage.getAllSubcategories(categoryId);
 			set({ subcategories, isInitialized: true, isLoading: false });
 		} catch (error) {
-			console.error("Ошибка инициализации CategorySubStore:", error);
+			console.error(CATEGORY_SUB_ERRORS.INIT_STORE, error);
 			set({ isLoading: false, isInitialized: true });
 		}
 	},
@@ -28,7 +29,7 @@ export const useCategorySubStore = create<ICategorySubState>((set, get) => ({
 			const subcategories = await get().storage.getAllSubcategories(categoryId);
 			set({ subcategories, isLoading: false });
 		} catch (error) {
-			console.error("Ошибка загрузки подкатегорий:", error);
+			console.error(CATEGORY_SUB_ERRORS.LOAD, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -52,7 +53,7 @@ export const useCategorySubStore = create<ICategorySubState>((set, get) => ({
 			}));
 			return subcategory;
 		} catch (error) {
-			console.error("Ошибка создания подкатегории:", error);
+			console.error(CATEGORY_SUB_ERRORS.CREATE_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -73,7 +74,7 @@ export const useCategorySubStore = create<ICategorySubState>((set, get) => ({
 				isLoading: false,
 			}));
 		} catch (error) {
-			console.error("Ошибка обновления имени подкатегории:", error);
+			console.error(CATEGORY_SUB_ERRORS.UPDATE_NAME_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -90,7 +91,7 @@ export const useCategorySubStore = create<ICategorySubState>((set, get) => ({
 				isLoading: false,
 			}));
 		} catch (error) {
-			console.error("Ошибка удаления подкатегории:", error);
+			console.error(CATEGORY_SUB_ERRORS.DELETE_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -101,19 +102,19 @@ export const useCategorySubStore = create<ICategorySubState>((set, get) => ({
 	},
 	updateSubcategoryDescription: async (
 		id: number,
-		categotyId: number,
+		categoryId: number,
 		description?: ICategorySub["description"]
 	) => {
 		set({ isLoading: true });
 		try {
-			await get().updateSubcategoryDescription(id, categotyId, description);
+			await get().storage.updateSubcategoryDescription(id, categoryId, description);
 			set((state) => ({
 				subcategories: state.subcategories.map((subcategory) =>
 					subcategory.id === id ? { ...subcategory, description } : subcategory
 				),
 			}));
 		} catch (error) {
-			console.error("Ошибка обновления описания подкатегории", error);
+			console.error(CATEGORY_SUB_ERRORS.UPDATE_DESCRIPTION_STORE, error);
 			throw error;
 		} finally {
 			set({ isLoading: false });

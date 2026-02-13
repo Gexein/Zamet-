@@ -1,9 +1,10 @@
-import { View, useWindowDimensions } from "react-native";
+import { View } from "react-native";
 import { MenuButton } from "../../menu-button/ui/menu-button";
 import { AddButton } from "../../add-button/ui/add-button";
+import { getScreenWidth } from "../../../shared/utils/getScreenWidth";
 
 export default function CategoryButtons() {
-	const { width } = useWindowDimensions();
+	const width = getScreenWidth(1)
 	return (
 		<View
 			style={{

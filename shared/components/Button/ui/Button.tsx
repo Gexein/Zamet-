@@ -11,8 +11,9 @@ import { useEffect, useRef } from "react";
 export function Button({
 	children,
 	disabled,
+	width,
 	...props
-}: PressableProps & { disabled?: boolean }) {
+}: PressableProps & { disabled?: boolean; width?: number }) {
 	const animatedValue = useRef(new Animated.Value(100)).current;
 	const scaleValue = useRef(new Animated.Value(1)).current;
 	const color = useRef(
@@ -71,7 +72,7 @@ export function Button({
 		>
 			<Pressable
 				{...props}
-				style={{ ...styles.button }}
+				style={{...styles.button, width: width ? width : 200}}
 				onPressOut={scaleOut}
 				onPressIn={scaleIn}
 			>
@@ -83,7 +84,6 @@ export function Button({
 
 const styles = StyleSheet.create({
 	button: {
-		width: 200,
 		height: 40,
 		color: COLORS.colorFg,
 		alignItems: "center",

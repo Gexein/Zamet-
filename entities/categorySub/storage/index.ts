@@ -1,5 +1,6 @@
 import { DataBaseService } from "../../../shared/database";
-import { SqlActions } from "../../../shared/consts/db";
+import { SQL_ACTIONS } from "../../../shared/consts/db";
+import { CATEGORY_SUB_ERRORS } from "../../../shared/consts/errors";
 import { ICategorySub } from "../types";
 
 export class CategorySubStorage {
@@ -10,7 +11,7 @@ export class CategorySubStorage {
 
 	async initializeCategorySubDb(): Promise<void> {
 		await this.db.executeSql(`
-			${SqlActions.CREATE} TABLE IF NOT EXISTS category_subcategories (
+			${SQL_ACTIONS.CREATE} TABLE IF NOT EXISTS category_subcategories (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				category_id INTEGER NOT NULL,
 				name TEXT NOT NULL,
@@ -24,7 +25,7 @@ export class CategorySubStorage {
 
 	async getAllSubcategories(categoryId: number): Promise<ICategorySub[]> {
 		const { rows } = await this.db.executeSql<ICategorySub>(
-			`${SqlActions.SELECT} * FROM category_subcategories WHERE category_id = ? ORDER BY created_at DESC`,
+			`${SQL_ACTIONS.SELECT} * FROM category_subcategories WHERE category_id = ? ORDER BY created_at DESC`,
 			[categoryId]
 		);
 		return rows;
@@ -35,7 +36,7 @@ export class CategorySubStorage {
 		categoryId: number
 	): Promise<ICategorySub | null> {
 		const { rows } = await this.db.executeSql<ICategorySub>(
-			`${SqlActions.SELECT} * FROM category_subcategories WHERE id = ? AND category_id = ?`,
+			`${SQL_ACTIONS.SELECT} * FROM category_subcategories WHERE id = ? AND category_id = ?`,
 			[id, categoryId]
 		);
 		return rows[0] || null;
@@ -47,14 +48,14 @@ export class CategorySubStorage {
 		description?: ICategorySub["description"]
 	): Promise<ICategorySub> {
 		const { insertId } = await this.db.executeSql(
-			`${SqlActions.INSERT} INTO category_subcategories (category_id, name, description) VALUES (?, ?, ?)`,
+			`${SQL_ACTIONS.INSERT} INTO category_subcategories (category_id, name, description) VALUES (?, ?, ?)`,
 			[categoryId, name, description || ""]
 		);
-		if (!insertId) throw new Error("Не удалось создать подкатегорию");
+		if (!insertId) throw new Error(CATEGORY_SUB_ERRORS.CREATE_FAILED);
 
 		const subcategory = await this.getSubcategoryById(insertId, categoryId);
 		if (!subcategory)
-			throw new Error("Не удалось получить созданную подкатегорию");
+			throw new Error(CATEGORY_SUB_ERRORS.CREATE_GET_FAILED);
 
 		return subcategory;
 	}
@@ -65,11 +66,11 @@ export class CategorySubStorage {
 		name: ICategorySub["name"]
 	): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.UPDATE} category_subcategories SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_id = ?`,
+			`${SQL_ACTIONS.UPDATE} category_subcategories SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_id = ?`,
 			[name, id, categoryId]
 		);
 		if (rowsAffected === 0)
-			throw new Error("Не удалось обновить имя подкатегории");
+			throw new Error(CATEGORY_SUB_ERRORS.UPDATE_NAME);
 	}
 
 	async updateSubcategoryDescription(
@@ -78,19 +79,19 @@ export class CategorySubStorage {
 		description?: ICategorySub["description"]
 	): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.UPDATE} category_subcategories SET description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_id = ?`,
+			`${SQL_ACTIONS.UPDATE} category_subcategories SET description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND category_id = ?`,
 			[description || "", id, categoryId]
 		);
 		if (rowsAffected === 0)
-			throw new Error("Не удалось обновить описание подкатегории");
+			throw new Error(CATEGORY_SUB_ERRORS.UPDATE_DESCRIPTION);
 	}
 
 	async deleteSubcategory(id: number, categoryId: number): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.DELETE} FROM category_subcategories WHERE id = ? AND category_id = ?`,
+			`${SQL_ACTIONS.DELETE} FROM category_subcategories WHERE id = ? AND category_id = ?`,
 			[id, categoryId]
 		);
-		if (rowsAffected === 0) throw new Error("Не удалось удалить подкатегорию");
+		if (rowsAffected === 0) throw new Error(CATEGORY_SUB_ERRORS.DELETE);
 	}
 }
 

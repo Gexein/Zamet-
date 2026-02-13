@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { IEntryState, IEntry } from "../types";
 import { EntryStorage } from "../storage";
+import { ENTRY_ERRORS } from "../../../shared/consts/errors";
 
 export const useEntryStore = create<IEntryState>((set, get) => ({
 	entries: [],
@@ -17,7 +18,7 @@ export const useEntryStore = create<IEntryState>((set, get) => ({
 			const entries = await get().storage.getAllEntries(categorySubId);
 			set({ entries, isInitialized: true, isLoading: false });
 		} catch (error) {
-			console.error("Ошибка инициализации EntryStore:", error);
+			console.error(ENTRY_ERRORS.INIT_STORE, error);
 			set({ isLoading: false, isInitialized: true });
 		}
 	},
@@ -28,7 +29,7 @@ export const useEntryStore = create<IEntryState>((set, get) => ({
 			const entries = await get().storage.getAllEntries(categorySubId);
 			set({ entries, isLoading: false });
 		} catch (error) {
-			console.error("Ошибка загрузки записей:", error);
+			console.error(ENTRY_ERRORS.LOAD, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -36,8 +37,8 @@ export const useEntryStore = create<IEntryState>((set, get) => ({
 
 	createEntry: async (
 		categorySubId: number,
-		name: IEntry["name"],
-		description?: IEntry["description"],
+		name?: IEntry["name"],
+		description: IEntry["description"],
 		date?: IEntry["date"]
 	) => {
 		set({ isLoading: true });
@@ -54,7 +55,7 @@ export const useEntryStore = create<IEntryState>((set, get) => ({
 			}));
 			return entry;
 		} catch (error) {
-			console.error("Ошибка создания записи:", error);
+			console.error(ENTRY_ERRORS.CREATE_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -75,7 +76,7 @@ export const useEntryStore = create<IEntryState>((set, get) => ({
 				isLoading: false,
 			}));
 		} catch (error) {
-			console.error("Ошибка обновления имени записи:", error);
+			console.error(ENTRY_ERRORS.UPDATE_NAME_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -98,7 +99,7 @@ export const useEntryStore = create<IEntryState>((set, get) => ({
 				),
 			}));
 		} catch (error) {
-			console.error("Ошибка обновления содержимого записи", error);
+			console.error(ENTRY_ERRORS.UPDATE_DESCRIPTION_STORE, error);
 			throw error;
 		} finally {
 			set({ isLoading: false });
@@ -118,7 +119,7 @@ export const useEntryStore = create<IEntryState>((set, get) => ({
 				),
 			}));
 		} catch (error) {
-			console.error("Ошибка обновления даты записи", error);
+			console.error(ENTRY_ERRORS.UPDATE_DATE_STORE, error);
 			throw error;
 		} finally {
 			set({ isLoading: false });
@@ -135,7 +136,7 @@ export const useEntryStore = create<IEntryState>((set, get) => ({
 				isLoading: false,
 			}));
 		} catch (error) {
-			console.error("Ошибка удаления записи:", error);
+			console.error(ENTRY_ERRORS.DELETE_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}

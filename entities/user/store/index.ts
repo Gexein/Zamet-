@@ -1,7 +1,10 @@
 import { create } from "zustand";
 import { IUser, IUserState } from "../types";
 import { UserStorage } from "../storage";
+import { USER_ERRORS } from "../../../shared/consts/errors";
 import { useCategoryStore } from "../../category/store";
+import { useCategorySubStore } from "../../categorySub/store";
+import { useEntryStore } from "../../entry/store";
 
 export const useUserStore = create<IUserState>((set, get) => ({
 	user: null,
@@ -14,6 +17,10 @@ export const useUserStore = create<IUserState>((set, get) => ({
 		set({ isLoading: true });
 		try {
 			await get().storage.initializeUserDb();
+			await useCategoryStore.getState().storage.initializeCategoryDb();
+			await useCategorySubStore.getState().storage.initializeCategorySubDb();
+			await useEntryStore.getState().storage.initializeEntryDb();
+
 			const user = await get().storage.getUserData();
 
 			if(user) {
@@ -25,7 +32,7 @@ export const useUserStore = create<IUserState>((set, get) => ({
 				user ? "Пользователь найден" : "Нет пользователя"
 			);
 		} catch (error) {
-			console.error("Ошибка инициализации UserStore:", error);
+			console.error(USER_ERRORS.INIT_STORE, error);
 			set({ isLoading: false, isInitialized: true });
 		}
 	},
@@ -45,7 +52,7 @@ export const useUserStore = create<IUserState>((set, get) => ({
 			);
 			set({ user, isLoading: false });
 		} catch (error) {
-			console.error("Ошибка сохранения пользователя:", error);
+			console.error(USER_ERRORS.SAVE_FAILED, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -54,9 +61,8 @@ export const useUserStore = create<IUserState>((set, get) => ({
 		set({ isLoading: true });
 		try {
 			const user = get().user;
-			if (!user) throw new Error("Нет пользователя для обновления");
+			if (!user) throw new Error(USER_ERRORS.NOT_FOUND);
 			await get().storage.updateUserName(user.id, name);
-			// Обновляем пользователя из БД
 			const updatedUser = await get().storage.getUserData();
 			if (updatedUser) {
 				set({ user: updatedUser, isLoading: false });
@@ -64,7 +70,7 @@ export const useUserStore = create<IUserState>((set, get) => ({
 				set({ isLoading: false });
 			}
 		} catch (error) {
-			console.error("Ошибка обновления имени пользователя:", error);
+			console.error(USER_ERRORS.UPDATE_NAME_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -73,9 +79,8 @@ export const useUserStore = create<IUserState>((set, get) => ({
 		set({ isLoading: true });
 		try {
 			const user = get().user;
-			if (!user) throw new Error("Нет пользователя для обновления");
+			if (!user) throw new Error(USER_ERRORS.NOT_FOUND);
 			await get().storage.updateUserPassword(user.id, password);
-			// Обновляем пользователя из БД
 			const updatedUser = await get().storage.getUserData();
 			if (updatedUser) {
 				set({ user: updatedUser, isLoading: false });
@@ -83,7 +88,7 @@ export const useUserStore = create<IUserState>((set, get) => ({
 				set({ isLoading: false });
 			}
 		} catch (error) {
-			console.error("Ошибка обновления пароля пользователя:", error);
+			console.error(USER_ERRORS.UPDATE_PASSWORD_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -92,9 +97,8 @@ export const useUserStore = create<IUserState>((set, get) => ({
 		set({ isLoading: true });
 		try {
 			const user = get().user;
-			if (!user) throw new Error("Нет пользователя для обновления");
+			if (!user) throw new Error(USER_ERRORS.NOT_FOUND);
 			await get().storage.updateUserTheme(user.id, theme);
-			// Обновляем пользователя из БД
 			const updatedUser = await get().storage.getUserData();
 			if (updatedUser) {
 				set({ user: updatedUser, isLoading: false });
@@ -102,7 +106,7 @@ export const useUserStore = create<IUserState>((set, get) => ({
 				set({ isLoading: false });
 			}
 		} catch (error) {
-			console.error("Ошибка обновления темы пользователя:", error);
+			console.error(USER_ERRORS.UPDATE_THEME_STORE, error);
 			set({ isLoading: false });
 			throw error;
 		}
@@ -112,7 +116,7 @@ export const useUserStore = create<IUserState>((set, get) => ({
 		try {
 			await get().storage.clearAllData();
 		} catch (error) {
-			console.error("Ошибка при удалении данных", error);
+			console.error(USER_ERRORS.CLEAR_DATA, error);
 			throw error;
 		} finally {
 			set({ isLoading: false });

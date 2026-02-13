@@ -1,5 +1,6 @@
 import * as SQlite from "expo-sqlite";
-import { SqlActions } from "../consts/db";
+import { SQL_ACTIONS } from "../consts/db";
+import { DB_ERRORS } from "../consts/errors";
 
 export class DataBaseService {
 	private db: SQlite.SQLiteDatabase | null = null;
@@ -19,16 +20,14 @@ export class DataBaseService {
 		}
 		const sqlQueryUppercased = sql.trim().toUpperCase();
 		if (!this.db) {
-			console.error(
-				"Ошибка в методе exequteSql при обращении к базе данных, this.db = null | undefined",
-			);
+			console.error(DB_ERRORS.EXECUTE_SQL_DB_NULL);
 			return { rows: [], rowsAffected: 0 };
 		}
 		try {
-			if (sqlQueryUppercased.startsWith(SqlActions.SELECT)) {
+			if (sqlQueryUppercased.startsWith(SQL_ACTIONS.SELECT)) {
 				const rows = await this.db.getAllAsync<T>(sql, params);
 				return { rows, rowsAffected: 0 };
-			} else if (sqlQueryUppercased.startsWith(SqlActions.INSERT)) {
+			} else if (sqlQueryUppercased.startsWith(SQL_ACTIONS.INSERT)) {
 				const result = await this.db.runAsync(sql, params);
 				return {
 					rows: [],
@@ -36,8 +35,8 @@ export class DataBaseService {
 					rowsAffected: result.changes,
 				};
 			} else if (
-				sqlQueryUppercased.startsWith(SqlActions.UPDATE) ||
-				sqlQueryUppercased.startsWith(SqlActions.DELETE)
+				sqlQueryUppercased.startsWith(SQL_ACTIONS.UPDATE) ||
+				sqlQueryUppercased.startsWith(SQL_ACTIONS.DELETE)
 			) {
 				const result = await this.db.runAsync(sql, params);
 				return { rows: [], rowsAffected: result.changes };
@@ -46,13 +45,7 @@ export class DataBaseService {
 				return { rows: [], rowsAffected: 0 };
 			}
 		} catch (error) {
-			console.error(
-				"Ошибка в методе exequteSql при работе с базой данных:",
-				sql,
-				params,
-				"error: ",
-				error,
-			);
+			console.error(DB_ERRORS.EXECUTE_SQL_QUERY, sql, params, "error: ", error);
 			throw error;
 		}
 	}
@@ -63,12 +56,12 @@ export class DataBaseService {
 
 		try {
 			if (!this.db) {
-				throw new Error("Ошибка. База данных не найдена");
+				throw new Error(DB_ERRORS.DB_NOT_FOUND);
 			}
 			await this.db.execAsync(`DELETE FROM ${tableName}`);
 			console.log(`Таблица "${tableName}" очищена`);
 		} catch (error) {
-			console.error(` Ошибка очистки таблицы "${tableName}":`, error);
+			console.error(DB_ERRORS.CLEAR_TABLE(tableName), error);
 			throw error;
 		}
 	}
@@ -78,14 +71,14 @@ export class DataBaseService {
 		}
 		try {
 			if (!this.db) {
-				throw new Error("Ошибка. База данных не найдена");
+				throw new Error(DB_ERRORS.DB_NOT_FOUND);
 			}
 			const result = await this.db?.getAllAsync<{ name: string }>(
-				`${SqlActions.SELECT} name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`,
+				`${SQL_ACTIONS.SELECT} name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`,
 			);
 			return result.map((row) => row.name);
 		} catch (error) {
-			console.error("Ошибка при получении списка таблиц ");
+			console.error(DB_ERRORS.GET_TABLES);
 			return [];
 		}
 	}
@@ -95,7 +88,7 @@ export class DataBaseService {
 			try {
 				await this.clearTable(table);
 			} catch (error) {
-				console.warn(`Не удалось очистить таблицу "${table}"`);
+				console.warn(DB_ERRORS.CLEAR_TABLE_FAILED(table));
 			}
 		}
 		console.log("Все таблицы очищены");

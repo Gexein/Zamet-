@@ -1,8 +1,8 @@
-import { View, StyleSheet, TextInputChangeEvent, Animated } from "react-native";
+import { View, TextInputChangeEvent, Animated } from "react-native";
 import type { InputRef } from "../../../shared/components/Input/types";
 import { Input } from "../../../shared/components/Input/ui/Input";
 import { Button } from "../../../shared/components/Button/ui/Button";
-import { COLORS, FONTSIZE } from "../../../shared/consts/styles";
+import { COLORS, FORM_STYLES} from "../../../shared/consts/styles";
 import {
 	isNameValid,
 	isPasswordValid,
@@ -11,6 +11,8 @@ import { useEffect, useRef, useState } from "react";
 import { useUserStore } from "../../../entities/user/store";
 import { useAppInfoStore } from "../../app-info/store";
 import { USER_MESSAGES } from "../../../shared/consts/messages";
+import { USER_ERRORS } from "../../../shared/consts/errors";
+import { getScreenWidth } from "../../../shared/utils/getScreenWidth";
 
 export function RegForm() {
 	const [inputValue, setInputValue] = useState<string>("");
@@ -18,6 +20,8 @@ export function RegForm() {
 	const inputRef = useRef<InputRef>(null);
 	const passwordInputRef = useRef<InputRef>(null);
 	const register = useUserStore().createUser;
+
+	const nodesWidth = getScreenWidth(0.75)
 
 	const animatedValue = useRef(
 		new Animated.ValueXY({
@@ -55,7 +59,7 @@ export function RegForm() {
 				const errorMessage =
 					error instanceof Error
 						? error.message
-						: "Не удалось создать пользователя";
+						: USER_ERRORS.CREATE_FAILED;
 				useAppInfoStore.getState().setMessage(errorMessage);
 			}
 		}
@@ -81,40 +85,40 @@ export function RegForm() {
 
 	useEffect(() => {
 		Animated.timing(animatedValue3, {
-			toValue: inputValue.length > 0 ? 0 : 100,
+			toValue: inputValue.length > 1 && passwordValue.length > 5 ? 0 : 100,
 			duration: 300,
 			useNativeDriver: false,
 		}).start();
-	}, [inputValue]);
+	}, [inputValue, passwordValue]);
 
 	return (
-		<View style={styles.form}>
+		<View style={FORM_STYLES.form}>
 			<Animated.View
 				style={{
-					transform: [{ translateX: animatedValue2 }],
+					transform: [{ translateX: animatedValue2 }], ...FORM_STYLES.inputsWrapper
 				}}
 			>
 				<Input
 					ref={inputRef}
-					label="Введите имя"
-					placeholder="Имя"
+					placeholder="Ваше имя"
 					placeholderTextColor={COLORS.colorBg}
 					value={inputValue}
 					onChange={(event: TextInputChangeEvent) =>
 						setInputValue(event.nativeEvent.text)
 					}
 					setInputValue={setInputValue}
+					width={nodesWidth}
 				/>
 				<Input
 					ref={passwordInputRef}
-					label="Введите пароль"
-					placeholder="Пароль"
+					placeholder="Придумайте пароль"
 					placeholderTextColor={COLORS.colorBg}
 					value={passwordValue}
 					onChange={(event: TextInputChangeEvent) =>
 						setPasswordValue(event.nativeEvent.text)
 					}
 					setInputValue={setPasswordValue}
+					width={nodesWidth}
 				/>
 			</Animated.View>
 			<Animated.View
@@ -123,32 +127,16 @@ export function RegForm() {
 				}}
 			>
 				<Button
-					disabled={inputValue.length < 1 || passwordValue.length < 1}
+					disabled={inputValue.length < 2 || passwordValue.length < 6}
 					onPress={onSubmitClick}
+					width={nodesWidth}
 				>
-					<Animated.Text style={[styles.buttonText, { color: color }]}>
+					<Animated.Text style={[FORM_STYLES.buttonText, { color: color }]}>
 						Начать
 					</Animated.Text>
 				</Button>
-				{/* <Text>
-					И тут нужно будет выбрать тему, светлая или темная. Будет радио
-					"Оставить темную тему" / "Переключиться на светлую тему" .Здесь будет
-					радио с 2 вариантами . "Использовать пароль для входа в приложение" /
-					"Использовать пароль только для сброса / изменения личных данных"
-				</Text> */}
 			</Animated.View>
 		</View>
 	);
 }
 
-const styles = StyleSheet.create({
-	form: {
-		rowGap: 25,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	buttonText: {
-		fontSize: FONTSIZE.xl,
-		fontFamily: "Montserrat",
-	},
-});

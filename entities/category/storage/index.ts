@@ -1,4 +1,5 @@
-import { SqlActions } from "../../../shared/consts/db";
+import { SQL_ACTIONS } from "../../../shared/consts/db";
+import { CATEGORY_ERRORS } from "../../../shared/consts/errors";
 import { DataBaseService } from "../../../shared/database";
 import { ICategory } from "../types";
 
@@ -10,7 +11,7 @@ export class CategoryStorage {
 
 	async initializeCategoryDb(): Promise<void> {
 		await this.db.executeSql(`
-			${SqlActions.CREATE} TABLE IF NOT EXISTS categories (
+			${SQL_ACTIONS.CREATE} TABLE IF NOT EXISTS categories (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				user_id INTEGER NOT NULL,
 				name TEXT NOT NULL,
@@ -24,7 +25,7 @@ export class CategoryStorage {
 
 	async getAllCategories(userId: number): Promise<ICategory[]> {
 		const { rows } = await this.db.executeSql<ICategory>(
-			`${SqlActions.SELECT} * FROM categories WHERE user_id = ? ORDER BY created_at DESC`,
+			`${SQL_ACTIONS.SELECT} * FROM categories WHERE user_id = ? ORDER BY created_at DESC`,
 			[userId]
 		);
 		return rows;
@@ -32,7 +33,7 @@ export class CategoryStorage {
 
 	async getCategoryById(id: number, userId: number): Promise<ICategory | null> {
 		const { rows } = await this.db.executeSql<ICategory>(
-			`${SqlActions.SELECT} * FROM categories WHERE id = ? AND user_id = ?`,
+			`${SQL_ACTIONS.SELECT} * FROM categories WHERE id = ? AND user_id = ?`,
 			[id, userId]
 		);
 		return rows[0] || null;
@@ -44,13 +45,13 @@ export class CategoryStorage {
 		description?: ICategory["description"]
 	): Promise<ICategory> {
 		const { insertId } = await this.db.executeSql(
-			`${SqlActions.INSERT} INTO categories (user_id, name, description) VALUES (?, ?, ?)`,
+			`${SQL_ACTIONS.INSERT} INTO categories (user_id, name, description) VALUES (?, ?, ?)`,
 			[userId, name, description || ""]
 		);
-		if (!insertId) throw new Error("Не удалось создать категорию");
+		if (!insertId) throw new Error(CATEGORY_ERRORS.CREATE_FAILED);
 
 		const category = await this.getCategoryById(insertId, userId);
-		if (!category) throw new Error("Не удалось получить созданную категорию");
+		if (!category) throw new Error(CATEGORY_ERRORS.CREATE_GET_FAILED);
 
 		return category;
 	}
@@ -61,11 +62,11 @@ export class CategoryStorage {
 		name: ICategory["name"]
 	): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.UPDATE} categories SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?`,
+			`${SQL_ACTIONS.UPDATE} categories SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?`,
 			[name, id, userId]
 		);
 		if (rowsAffected === 0)
-			throw new Error("Не удалось обновить имя категории");
+			throw new Error(CATEGORY_ERRORS.UPDATE_NAME);
 	}
 
 	async updateCategoryDescription(
@@ -74,18 +75,18 @@ export class CategoryStorage {
 		description?: ICategory["description"]
 	): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.UPDATE} categories SET description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?`,
+			`${SQL_ACTIONS.UPDATE} categories SET description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?`,
 			[description || "", id, userId]
 		);
 		if (rowsAffected === 0)
-			throw new Error("Не удалось обновить описание категории");
+			throw new Error(CATEGORY_ERRORS.UPDATE_DESCRIPTION);
 	}
 
 	async deleteCategory(id: number, userId: number): Promise<void> {
 		const { rowsAffected } = await this.db.executeSql(
-			`${SqlActions.DELETE} FROM categories WHERE id = ? AND user_id = ?`,
+			`${SQL_ACTIONS.DELETE} FROM categories WHERE id = ? AND user_id = ?`,
 			[id, userId]
 		);
-		if (rowsAffected === 0) throw new Error("Не удалось удалить категорию");
+		if (rowsAffected === 0) throw new Error(CATEGORY_ERRORS.DELETE);
 	}
 }

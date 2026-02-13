@@ -1,4 +1,4 @@
-export const SqlActions = {
+export const SQL_ACTIONS = {
 	SELECT: "SELECT",
 	INSERT: "INSERT",
 	UPDATE: "UPDATE",

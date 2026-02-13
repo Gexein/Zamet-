@@ -20,8 +20,8 @@ export interface IEntryState {
 	loadEntries: (categorySubId: number) => Promise<void>;
 	createEntry: (
 		categorySubId: number,
-		name: IEntry["name"],
-		description?: IEntry["description"],
+		name?: IEntry["name"],
+		description: IEntry["description"],
 		date?: IEntry["date"]
 	) => Promise<IEntry>;
 	updateEntryName: (
@@ -32,7 +32,7 @@ export interface IEntryState {
 	updateEntryDescription: (
 		id: number,
 		categorySubId: number,
-		name: IEntry["description"]
+		description: IEntry["description"]
 	) => Promise<void>;
 	updateEntryDate: (
 		id: number,
